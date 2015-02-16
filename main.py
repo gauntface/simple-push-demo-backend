@@ -41,13 +41,17 @@ class SendPushHandler(webapp2.RequestHandler):
 
     form_data = urllib.urlencode(form_fields)
 
+    headers = {}
+    if endpoint.startswith('https://android.googleapis.com/gcm') :
+      headers = {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'Authorization': 'key=AIzaSyBBh4ddPa96rQQNxqiq_qQj7sq1JdsNQUQ'
+      }
+
     result = urlfetch.fetch(url=endpoint,
                             payload=form_data,
                             method=urlfetch.POST,
-                            headers={
-              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-              'Authorization': 'key=AIzaSyBBh4ddPa96rQQNxqiq_qQj7sq1JdsNQUQ'
-            })
+                            headers=headers)
     
     if result.status_code == 200 and not result.content.startswith("Error") :
       self.response.write('{ "success": true }')
