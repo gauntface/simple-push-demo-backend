@@ -1,4 +1,4 @@
-application: simple-push-demo
+application: simple-push-demo-backend
 version: v2014-12-03
 runtime: python27
 api_version: 1
@@ -25,3 +25,8 @@ handlers:
 libraries:
 - name: webapp2
   version: "2.5.2"
+
+skip_files:
+- ^(.*/)?.*/node_modules/.*$
+- ^.git/.*$
+- ^(.*/)?.*/frontend/app/.*$
