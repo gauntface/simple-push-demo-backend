@@ -26,6 +26,9 @@ class SendPushHandler(webapp2.RequestHandler):
   def post(self):
     logging.info('SendPushHandler')
 
+    # Enable CORS
+    self.response.headers.add_header("Access-Control-Allow-Origin", "*")
+
     subscriptionId = self.request.get("subscriptionId")
     endpoint = self.request.get("endpoint")
 
@@ -47,8 +50,7 @@ class SendPushHandler(webapp2.RequestHandler):
             })
     
     if result.status_code == 200 and not result.content.startswith("Error") :
-      self.response.write('{ "success": true, ' +
-                          '"registration": "' + registrationId + '" }')
+      self.response.write('{ "success": true }')
     else:
       logging.info(result.content)
       self.response.write('{ "success": false }')
