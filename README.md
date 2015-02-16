@@ -28,7 +28,8 @@ Below is a simple example making a fetch:
         method: 'post',
         body: formData
       }).then(function(response) {
-        console.log('Response = ', response);
+        // NOOP
       }).catch(function(err) {
         console.log('Fetch Error :-S', err);
       });
+
