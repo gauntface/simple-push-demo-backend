@@ -32,21 +32,26 @@ class SendPushHandler(webapp2.RequestHandler):
     subscriptionId = self.request.get("subscriptionId")
     endpoint = self.request.get("endpoint")
 
-    logging.info(subscriptionId)
-    logging.info(endpoint)
-
-    form_fields = {
-      "registration_id": subscriptionId
-    }
-
-    form_data = urllib.urlencode(form_fields)
-
     headers = {}
-    if endpoint.startswith('https://android.googleapis.com/gcm') :
+    form_data = None
+    if endpoint.startswith('https://android.googleapis.com/gcm/send') :
       headers = {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         'Authorization': 'key=AIzaSyBBh4ddPa96rQQNxqiq_qQj7sq1JdsNQUQ'
       }
+      if len(subscriptionId) is 0 :
+        endpointParts = endpoint.split('/')
+        subscriptionId = endpointParts[len(endpointParts) - 1]
+       
+        endpoint = 'https://android.googleapis.com/gcm/send'
+
+      form_fields = {
+        "registration_id": subscriptionId
+      }
+      form_data = urllib.urlencode(form_fields)
+
+    logging.info(endpoint)
+    logging.info(form_data)
 
     result = urlfetch.fetch(url=endpoint,
                             payload=form_data,
@@ -54,8 +59,11 @@ class SendPushHandler(webapp2.RequestHandler):
                             headers=headers)
     
     if result.status_code == 200 and not result.content.startswith("Error") :
+      logging.info('SUCCESS')
       self.response.write('{ "success": true }')
     else:
+      logging.info('FAILURE ')
+      logging.info(result.status_code)
       logging.info(result.content)
       self.response.write('{ "success": false }')
 
