@@ -29,29 +29,44 @@ class SendPushHandler(webapp2.RequestHandler):
     # Enable CORS
     self.response.headers.add_header("Access-Control-Allow-Origin", "*")
 
-    subscriptionId = self.request.get("subscriptionId")
+    # Enable the endpoint
     endpoint = self.request.get("endpoint")
 
     headers = {}
     form_data = None
-    if endpoint.startswith('https://android.googleapis.com/gcm/send') :
+    if endpoint.startswith('https://android.googleapis.com/gcm/send'):
+      logging.info('Handling a GCM request')
+
+      subscriptionId = self.request.get("subscriptionId")
+      authorization = self.request.get("authorization")
+      payload = self.request.get("payload")
+      if len(authorization) is 0:
+        authorization = 'AIzaSyBBh4ddPa96rQQNxqiq_qQj7sq1JdsNQUQ';
+      
       headers = {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        'Authorization': 'key=AIzaSyBBh4ddPa96rQQNxqiq_qQj7sq1JdsNQUQ'
+        'Authorization': 'key='+authorization
       }
+
       if len(subscriptionId) is 0 :
         endpointParts = endpoint.split('/')
         subscriptionId = endpointParts[len(endpointParts) - 1]
        
         endpoint = 'https://android.googleapis.com/gcm/send'
 
+      logging.info('Endpoint: ' + endpoint)
+      logging.info('regId: ' + subscriptionId)
+      logging.info('authorization: ' + authorization)
+      logging.info('payload: ' + payload);
+
       form_fields = {
-        "registration_id": subscriptionId
+        "registration_id": subscriptionId,
+        "data": payload
       }
       form_data = urllib.urlencode(form_fields)
-
-    logging.info(endpoint)
-    logging.info(form_data)
+    else :
+      logging.info('We don\'t currently support any other endpoints')
+      self.response.write('{ "success": false }')
 
     result = urlfetch.fetch(url=endpoint,
                             payload=form_data,
@@ -59,10 +74,10 @@ class SendPushHandler(webapp2.RequestHandler):
                             headers=headers)
     
     if result.status_code == 200 and not result.content.startswith("Error") :
-      logging.info('SUCCESS')
+      logging.info('Successful Request')
       self.response.write('{ "success": true }')
     else:
-      logging.info('FAILURE ')
+      logging.info('Failed Request')
       logging.info(result.status_code)
       logging.info(result.content)
       self.response.write('{ "success": false }')
