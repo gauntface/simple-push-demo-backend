@@ -32,6 +32,8 @@ class SendPushHandler(webapp2.RequestHandler):
     subscriptionId = self.request.get("subscriptionId")
     endpoint = self.request.get("endpoint")
 
+    logging.info('Endpoint: ' + endpoint)
+
     headers = {}
     form_data = None
     if endpoint.startswith('https://android.googleapis.com/gcm/send') :
@@ -42,7 +44,7 @@ class SendPushHandler(webapp2.RequestHandler):
       if len(subscriptionId) is 0 :
         endpointParts = endpoint.split('/')
         subscriptionId = endpointParts[len(endpointParts) - 1]
-       
+
         endpoint = 'https://android.googleapis.com/gcm/send'
 
       form_fields = {
@@ -50,15 +52,12 @@ class SendPushHandler(webapp2.RequestHandler):
       }
       form_data = urllib.urlencode(form_fields)
 
-    logging.info(endpoint)
-    logging.info(form_data)
-
     result = urlfetch.fetch(url=endpoint,
                             payload=form_data,
                             method=urlfetch.POST,
                             headers=headers)
-    
-    if result.status_code == 200 and not result.content.startswith("Error") :
+
+    if (result.status_code == 200 or result.status_code == 201) and not result.content.startswith("Error") :
       logging.info('SUCCESS')
       self.response.write('{ "success": true }')
     else:
