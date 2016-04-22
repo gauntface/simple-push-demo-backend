@@ -6,9 +6,8 @@ threadsafe: yes
 
 handlers:
 - url: /
-  static_files: frontend/dist/index.html
   secure: always
-  upload: frontend/dist/index\.html
+  script: redirect.app
 
 - url: /send_push
   secure: always
