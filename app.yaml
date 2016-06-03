@@ -11,11 +11,11 @@ handlers:
 
 - url: /send_push
   secure: always
-  script: main.app
+  script: main-old.app
 
-- url: /*
+- url: /api/v2/sendpush
   secure: always
-  static_dir: frontend/dist/
+  script: main-v2.app
 
 - url: .*
   secure: always
@@ -26,6 +26,4 @@ libraries:
   version: "2.5.2"
 
 skip_files:
-- ^(.*/)?.*/node_modules/.*$
 - ^.git/.*$
-- ^(.*/)?.*/frontend/app/.*$
