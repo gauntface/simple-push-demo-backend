@@ -19,6 +19,7 @@ import urllib
 import logging
 import datetime
 import json
+import base64
 from google.appengine.api import urlfetch
 from google.appengine.ext import db
 
@@ -45,7 +46,7 @@ class SendPushHandler(webapp2.RequestHandler):
             # body = json.dumps(requestData['body'])
             body = requestData['body']
         else:
-            body = requestData['body']
+            body = base64.b64decode(requestData['body'])
 
     # Call the api with the appropriate info
     result = urlfetch.fetch(url=endpoint,
