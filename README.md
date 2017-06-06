@@ -1,6 +1,11 @@
-# NO LONGER IN USE
+# API for simple-push-demo.
 
-I've simplified the demo and it can now be hosted off of Github pages.
+## Run Locally
 
-Demo: [https://gauntface.github.io/simple-push-demo/]()
-Code: [https://github.com/gauntface/simple-push-demo/]()
+    dev_appserver.py ./
+
+## Deploy
+
+    appcfg.py -A simple-push-demo -V v2 update ./
+
+For the version, you could use the date.
